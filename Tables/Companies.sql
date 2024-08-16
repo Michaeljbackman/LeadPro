@@ -1,5 +1,4 @@
 -- Company info eg. Address, size, name, industry, description, tenant 
--- Creating a table --
 CREATE TABLE Companies (
     id INT PRIMARY KEY,
     name VARCHAR(255),

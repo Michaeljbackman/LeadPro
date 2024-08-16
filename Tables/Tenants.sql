@@ -1,6 +1,5 @@
 --Company thats using lead pro
 -- For the tenant we want an ID, name, created_at, billing_type, primary_contact_id
--- Creating a table for tenants
 CREATE TABLE Tenants (
     id INT PRIMARY KEY,
     name VARCHAR(255),
