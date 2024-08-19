@@ -4,7 +4,7 @@ from sqlalchemy import create_engine, text
 def create_tables():
     commands = (
         """
-        CREATE TABLE Tenants (
+        CREATE TABLE IF NOT EXISTS Tenants (
             id INT PRIMARY KEY,
             name VARCHAR(255),
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -12,7 +12,7 @@ def create_tables():
         )
         """,
         """
-        CREATE TABLE Companies (
+        CREATE TABLE IF NOT EXISTS Companies (
             id INT PRIMARY KEY,
             name VARCHAR(255),
             address_line_1 VARCHAR(500),
@@ -26,7 +26,7 @@ def create_tables():
         )
         """,
         """
-        CREATE TABLE Contacts (
+        CREATE TABLE IF NOT EXISTS Contacts (
             id INT PRIMARY KEY,
             name VARCHAR(255),
             email VARCHAR(255),
@@ -36,7 +36,7 @@ def create_tables():
         )
         """,
         """
-        CREATE TABLE Emails (
+        CREATE TABLE IF NOT EXISTS Emails (
             id INT PRIMARY KEY,
             contact_id INT REFERENCES Contacts(id),
             subject VARCHAR(255),
@@ -47,13 +47,15 @@ def create_tables():
         """
     )
 
-    # Connect to the leadpro database
     engine = create_engine('postgresql://LeadPro:generateleads@localhost:5432/leadpro')
 
-    with engine.connect() as connection:
+    with engine.begin() as connection:
         for command in commands:
-            connection.execute(text(command))
-        connection.commit()
+            try:
+                connection.execute(text(command))
+                print(f"Table created or already exists.")
+            except sqlalchemy.exc.ProgrammingError as e:
+                print(f"Error creating table: {str(e)}")
 
 def create_database():
     engine = create_engine('postgresql://LeadPro:generateleads@localhost:5432/postgres')
@@ -65,8 +67,8 @@ def create_database():
             connection.execute(text("CREATE DATABASE leadpro"))
             print("Database 'leadpro' created.")
         else:
-            print("Database 'leadpro' already exists.")
-        
+            print("There is already a LeadPro database")
+
 if __name__ == '__main__':
     create_database()
     create_tables()
